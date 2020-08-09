@@ -1,26 +1,12 @@
-import os
 import abc
+import os
 import pathlib
-from typing import Generic, TypeVar, Iterable, Any
+from typing import Generic, Iterable, List, NewType, Optional, Sequence, Tuple, TypeVar
 
-import soundfile as sf
-
-
-IR = NewType("array of shape (C, ...)", Any)
-NAME_T = TypeVar("NameType")
-
-
-def sf_info(f: str, attrs: [str]):
-    """Get a bunch of SoundFile info from `f`. Shortcut for:
-
-        [
-            sf.SoundFile(f).foo,
-            sf.SoundFile(f).bar,
-            ...
-        ]
-    """
-    with sf.SoundFile(f) as fobj:
-        return [getattr(fobj, a) for a in attrs]
+#: IR = Type of IR; array of shape (chans, samples). Note that both `chans` and `samples` may be different for each IR of a dataset.
+IR = NewType("IR", Sequence)
+#: NAME_T = Type of IR name; eg., str or Tuple[str, int]
+NAME_T = TypeVar("NAME_T")
 
 
 def shape(things):
@@ -34,34 +20,33 @@ def shape(things):
 
 
 def check_nonmono(x):
-    """Check that `x` is of shape `(chans, ...)`"""
+    """Check that `x` is of shape `(chans, samples)`"""
     assert (
         len(shape(x)) == 2 and shape(x)[0] < 10
-    ), f"Shape should be (channels, ...) but is {shape(x)}"
+    ), f"Shape should be (channels, samples) but is {shape(x)}"
 
 
-class IRDataset(typing.Generic[NAME_T]):
+class IRDataset(Generic[NAME_T]):
     """Base class for all IR datasets.
 
-    Each dataset contains many IRs. An IR is a audio array of shape `(chans, ...)`,
+    Each dataset contains many IRs. An IR is a audio array of shape `(chans, samples)`,
     i.e. always a *non-mono* audio array. Each IR has a "name" (of type str or any other type compatible with `__getitem__`).
     IRs may be loaded from a dataset using `__getitem__`: ``ds[ir_name]``.
 
     Most datasets will be file-based, but that is not a requirement.
     """
+
     #: (required) Unique name for this dataset.
-    name: str = NotImplemented
+    name: str
     #: (optional) Where to find about more about this dataset.
-    url: str = None
+    url: Optional[str] = None
+    #: (optional) Direct dataset download URLs.
+    download_urls: Sequence[str] = ()
     #: (optional) Copyright notice, list of authors, license name/URL, etc.
-    license: str = None
-
-    def __str__(self):
-        return f"{self.__class__} ({self.name})"
-
+    license: Optional[str] = None
 
     @abc.abstractmethod
-    def getall(self) -> Iterable[(NAME_T, IR)]:
+    def getall(self) -> Iterable[Tuple[NAME_T, IR]]:
         """All IRs in this dataset.
 
         Returns:
@@ -81,7 +66,7 @@ class IRDataset(typing.Generic[NAME_T]):
         """Number of IRs in this dataset."""
 
     @abc.abstractmethod
-    def list_irs(self) -> [(NAME_T, int, int, int)]:
+    def list_irs(self) -> List[Tuple[NAME_T, int, int, int]]:
         """List of IRs in this dataset, with metadata.
 
         Returns:
@@ -90,24 +75,36 @@ class IRDataset(typing.Generic[NAME_T]):
             samples (duration) of the IR, and `sr` is the IR's sample rate.
         """
 
+    def __str__(self):
+        return f"{self.__class__} ({self.name})"
 
-class FileIRDataset(IRDataset):
-    """A dataset whose IRs are read from files.
+
+class FileIRDataset(IRDataset[NAME_T]):
+    """Base class for datasets whose IRs are read from files.
 
     Args:
         root (pathlib.Path or str): Root directory where the dataset resides.
     """
-    file_patterns = NotImplemented
-    exclude_patterns = ()
+
+    file_patterns: Sequence[str]
+    exclude_patterns: Sequence[str] = ()
 
     def __init__(self, root: pathlib.Path):
         self.root = pathlib.Path(root)
         super().__init__()
 
+    @abc.abstractmethod
+    def _get_ir(self, name: NAME_T) -> IR:
+        """Retrieve a single IR."""
+
+    @abc.abstractmethod
+    def _list_irs(self) -> List[Tuple[NAME_T, int, int, int]]:
+        """See ``.list_irs``."""
+
     def __str__(self):
         return super().__str__() + f" root={self.root}"
 
-    def list_files(self) -> [str]:
+    def list_files(self) -> List[str]:
         """List all files in the dataset."""
         self._populate_files_list()
         return self._files_list
@@ -132,7 +129,7 @@ class FileIRDataset(IRDataset):
 
     def __getitem__(self, name):
         self._populate_irs_list()
-        ir = self._getir(name)
+        ir = self._get_ir(name)
         check_nonmono(ir)
         return ir
 
