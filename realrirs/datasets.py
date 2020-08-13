@@ -1,3 +1,4 @@
+import pathlib
 from typing import Tuple
 
 import numpy as np
@@ -31,12 +32,12 @@ except ImportError:
     librosa = DelayedImportError("librosa")
 
 
-def _soundfile_info(f: str) -> Tuple[int, int, int]:
-    with soundfile.SoundFile(f) as fobj:
-        return fobj.channels, fobj.frames, fobj.samplerate
+def _soundfile_info(f: pathlib.Path) -> Tuple[int, int, int]:
+    with soundfile.SoundFile(str(f)) as fobj:
+        return fobj.channels, len(fobj), fobj.samplerate
 
 
-def _audioread_info(f: str) -> Tuple[int, int, int]:
+def _audioread_info(f: pathlib.Path) -> Tuple[int, int, int]:
     with librosa.core.audio.audioread.audio_open(str(f)) as fobj:
         return fobj.channels, fobj.duration * fobj.samplerate, fobj.samplerate
 
@@ -96,7 +97,7 @@ class AIRDataset(FileIRDataset[str]):
         return scipy_io.loadmat(name, struct_as_record=False)["h_air"]
 
 
-class SoundfileDataset(FileIRDataset[str]):
+class SoundfileDataset(FileIRDataset[pathlib.Path]):
     """Base class for datasets that can be read by `soundfile`."""
 
     def _list_irs(self):
@@ -112,7 +113,7 @@ class SoundfileDataset(FileIRDataset[str]):
                 return data.T
 
 
-class LibrosaDataset(FileIRDataset[str]):
+class LibrosaDataset(FileIRDataset[pathlib.Path]):
     """Base class for datasets that can be read by `librosa` (most audio files)."""
 
     def _list_irs(self):
@@ -151,7 +152,7 @@ class HopkinsDataset(WavDataset):
     file_patterns = ["Real Spaces/**/*.wav"]
 
 
-class IOSRRealRoomsDataset(FileIRDataset[Tuple[str, int, int]], CacheMixin):
+class IOSRRealRoomsDataset(FileIRDataset[Tuple[pathlib.Path, int, int]], CacheMixin):
     name = "Surrey Binaural Room Impulse Response Measurements"
     url = "https://github.com/IoSR-Surrey/RealRoomBRIRs"
     license = "MIT"
@@ -177,7 +178,7 @@ class IOSRRealRoomsDataset(FileIRDataset[Tuple[str, int, int]], CacheMixin):
         ].reshape((1, -1))
 
 
-class KEMARDataset(FileIRDataset[Tuple[str, str]]):
+class KEMARDataset(FileIRDataset[Tuple[pathlib.Path, str]]):
     name = "Dataset of measured binaural room impulse responses for use in an position-dynamic auditory augmented reality application"
     url = "https://zenodo.org/record/1321996"
     license = "CC BY-NC 4.0"
@@ -206,7 +207,7 @@ class KEMARDataset(FileIRDataset[Tuple[str, str]]):
                 yield (f, t[0]), ir.T
 
 
-class MIRDDataset(FileIRDataset[Tuple[str, int]]):
+class MIRDDataset(FileIRDataset[Tuple[pathlib.Path, int]]):
     name = "Multi-Channel Impulse Response Database"
     url = "https://www.iks.rwth-aachen.de/forschung/tools-downloads/databases/multi-channel-impulse-response-database/"
     license = "?"
@@ -241,7 +242,7 @@ class Reverb2014Dataset(WavDataset):
     file_patterns = ["**/RIR_*.wav"]
 
 
-class TUIInEarBehindEarDataset(FileIRDataset[Tuple[str, str, int]]):
+class TUIInEarBehindEarDataset(FileIRDataset[Tuple[pathlib.Path, str, int]]):
     name = "Dataset of In-The-Ear and Behind-The-Ear Binaural Room Impulse Responses"
     url = "https://github.com/pyBinSim/HeadRelatedDatabase"
     license = "CC BY-NC 4.0"
@@ -273,7 +274,7 @@ class TUIInEarBehindEarDataset(FileIRDataset[Tuple[str, str, int]]):
                     yield (f, t, idx), (l, r)
 
 
-class BellVarechoicDataset(FileIRDataset[Tuple[str, int]]):
+class BellVarechoicDataset(FileIRDataset[Tuple[pathlib.Path, int]]):
     name = "Impulse Responses from the Bell Labs Varechoic Chamber"
     url = "?"
     license = "?"
@@ -298,7 +299,7 @@ class BellVarechoicDataset(FileIRDataset[Tuple[str, int]]):
         )
 
 
-class IOSRListeningRoomsDataset(FileIRDataset[Tuple[str, int]], CacheMixin):
+class IOSRListeningRoomsDataset(FileIRDataset[Tuple[pathlib.Path, int]], CacheMixin):
     name = "The IoSR listening room multichannel BRIR dataset"
     url = "https://github.com/IoSR-Surrey/IoSR_ListeningRoom_BRIRs"
     license = "CC BY 4.0"
@@ -323,8 +324,9 @@ class IOSRListeningRoomsDataset(FileIRDataset[Tuple[str, int]], CacheMixin):
         ]
 
 
-class BinaryArrayDataset(FileIRDataset[str]):
-    """Base class for datasets that are stored as binary audio arrays and can be read using ``np.fromfile`` or ``np.memmap``.
+class BinaryArrayDataset(FileIRDataset[pathlib.Path]):
+    """Base class for datasets that are stored as binary audio arrays and can
+    be read using ``np.fromfile`` or ``np.memmap``.
 
     Args:
         use_memmap (bool, default True): Whether to use ``np.memmap`` to read the files.

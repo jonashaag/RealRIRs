@@ -29,9 +29,10 @@ def check_nonmono(x):
 class IRDataset(Generic[NAME_T]):
     """Base class for all IR datasets.
 
-    Each dataset contains many IRs. An IR is a audio array of shape `(chans, samples)`,
-    i.e. always a *non-mono* audio array. Each IR has a "name" (of type str or any other type compatible with `__getitem__`).
-    IRs may be loaded from a dataset using `__getitem__`: ``ds[ir_name]``.
+    Each dataset contains many IRs.  An IR is a audio array of shape `(chans, samples)`,
+    i.e. always a *non-mono* audio array.  Each IR has a "name" (of type str or any
+    other type compatible with `__getitem__`).  IRs may be loaded from a dataset using
+    `__getitem__`: ``ds[ir_name]``.
 
     Most datasets will be file-based, but that is not a requirement.
     """
@@ -88,10 +89,11 @@ class FileIRDataset(IRDataset[NAME_T]):
 
     file_patterns: Sequence[str]
     exclude_patterns: Sequence[str] = ()
+    _files_list: List[pathlib.Path]
 
     def __init__(self, root: pathlib.Path):
-        self.root = pathlib.Path(root)
         super().__init__()
+        self.root = pathlib.Path(root)
 
     @abc.abstractmethod
     def _get_ir(self, name: NAME_T) -> IR:
@@ -104,7 +106,7 @@ class FileIRDataset(IRDataset[NAME_T]):
     def __str__(self):
         return super().__str__() + f" root={self.root}"
 
-    def list_files(self) -> List[str]:
+    def list_files(self) -> List[pathlib.Path]:
         """List all files in the dataset."""
         self._populate_files_list()
         return self._files_list
@@ -113,7 +115,7 @@ class FileIRDataset(IRDataset[NAME_T]):
         if not hasattr(self, "_files_list"):
             self._files_list = self._list_files()
 
-    def _list_files(self):
+    def _list_files(self) -> List[pathlib.Path]:
         return [
             f
             for p in self.file_patterns
