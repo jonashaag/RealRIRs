@@ -36,6 +36,7 @@ datasets = [
     realrirs.datasets.MIRDDataset(R.joinpath("MIRD")),
     realrirs.datasets.IOSRListeningRoomsDataset(R.joinpath("IoSR_ListeningRoom_BRIRs")),
     realrirs.datasets.FOAIRDataset(R.joinpath("360-BRIR-FOAIR-database")),
+    realrirs.datasets.MITDataset(R.joinpath("MIT")),
 ]
 
 meta = {}

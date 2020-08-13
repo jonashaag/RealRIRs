@@ -56,6 +56,7 @@ aachen_impulse_response_database.getall()
 | [REVERB challenge RealData](http://reverb2014.dereverberation.com/) | ? | 36 | 0.6 s | 4.8 s |
 | [RIR samples Darmstadt and Helsinki, Summer-Autumn 2018](https://zenodo.org/record/1434786) | CC BY 4.0 | 1788 | 25.3 s | 25.3 s |
 | [RWCP Sound Scene Database in Real Acoustical Environments](https://www.openslr.org/13/) | ? | 6758 | 64.6 s | 64.6 s |
+| [Statistics of natural reverberation enable perceptual separation of sound and space](https://mcdermottlab.mit.edu/Reverb/IR_Survey.html) | ? | 270 | 2.9 s | 2.9 s |
 | [Surrey Binaural Room Impulse Response Measurements](https://github.com/IoSR-Surrey/RealRoomBRIRs) | MIT | 370 | 4.2 s | 4.2 s |
 | [The IoSR listening room multichannel BRIR dataset](https://github.com/IoSR-Surrey/IoSR_ListeningRoom_BRIRs) | CC BY 4.0 | 3456 | 78.6 s | 157.3 s |
 | [Voxengo Free Reverb Impulse Responses](https://www.voxengo.com/impulses/) | Custom, similar to CC BY-SA | 38 | 1.4 s | 2.7 s |

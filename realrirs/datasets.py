@@ -441,3 +441,9 @@ class HybridReverb2Dataset(FlacDataset):
     name = "Impulse Response Database for HybridReverb2"
     url = "https://github.com/jpcima/HybridReverb2-impulse-response-database"
     license = "CC BY-SA 4.0"
+
+
+class MITDataset(WavDataset):
+    name = "Statistics of natural reverberation enable perceptual separation of sound and space"
+    url = "https://mcdermottlab.mit.edu/Reverb/IR_Survey.html"
+    license = "?"
