@@ -2,9 +2,10 @@ import abc
 import os
 import pathlib
 from typing import Generic, Iterable, List, NewType, Optional, Sequence, Tuple, TypeVar
+import numpy as np
 
-#: IR = Type of IR; array of shape (chans, samples). Note that both `chans` and `samples` may be different for each IR of a dataset.
-IR = NewType("IR", Sequence)
+#: IR = Type of IR; numpy array of shape (chans, samples). Note that both `chans` and `samples` may be different for each IR of a dataset.
+IR = NewType("IR", np.ndarray)
 #: NAME_T = Type of IR name; eg., str or Tuple[str, int]
 NAME_T = TypeVar("NAME_T")
 
@@ -47,11 +48,15 @@ class IRDataset(Generic[NAME_T]):
     license: Optional[str] = None
 
     @abc.abstractmethod
-    def getall(self) -> Iterable[Tuple[NAME_T, IR]]:
+    def getall(self) -> Iterable[Tuple[NAME_T, int, IR]]:
         """All IRs in this dataset.
 
+        The number of IRs returned must be the same as by list_irs(),
+        and order must be identical.
+
         Returns:
-            Iterator or sequence of (name: NAME_T, ir: IR) pairs
+            Iterator or sequence of (name: NAME_T, sr: int, ir: IR) pairs,
+            where `sr` is the IR's sample rate.
         """
 
     @abc.abstractmethod
@@ -69,6 +74,9 @@ class IRDataset(Generic[NAME_T]):
     @abc.abstractmethod
     def list_irs(self) -> List[Tuple[NAME_T, int, int, int]]:
         """List of IRs in this dataset, with metadata.
+
+        The number of IRs returned must be the same as by getall(),
+        and order must be identical.
 
         Returns:
             List of (name, nchan, nsamples, sr) pairs, where `nchan` is the
@@ -119,15 +127,15 @@ class FileIRDataset(IRDataset[NAME_T]):
         return [
             f
             for p in self.file_patterns
-            for f in self.root.glob(p.replace("/", os.sep))
+            for f in sorted(self.root.glob(p.replace("/", os.sep)))
             if not any(f.match(e) for e in self.exclude_patterns)
         ]
 
     def getall(self):
         self._populate_irs_list()
-        for name, ir in self._getall():
+        for name, sr, ir in self._getall():
             check_nonmono(ir)
-            yield name, ir
+            yield name, sr, ir
 
     def __getitem__(self, name):
         self._populate_irs_list()
@@ -147,7 +155,7 @@ class FileIRDataset(IRDataset[NAME_T]):
             self._irs_list = self._list_irs()
 
     def _getall(self):
-        return ((name, self[name]) for name, *_ in self.list_irs())
+        return ((name, sr, self[name]) for name, *_, sr in self.list_irs())
 
 
 class CacheMixin:

@@ -14,7 +14,9 @@ setup(
     long_description_content_type="text/markdown",
     license="ISC",
     python_requires=">=3.4",
-    extras_require={"full": ["librosa", "pysofaconventions", "scipy", "soundfile"],},
+    extras_require={
+        "full": ["librosa", "pysofaconventions", "scipy", "soundfile"],
+    },
     packages=find_packages(),
     include_package_data=True,
     classifiers=[

@@ -68,7 +68,7 @@ class FOAIRDataset(FileIRDataset[Tuple[str, int]], CacheMixin):
                 return fobj.read().T
         else:
             mat = self.cached(("loadmat", fpath), scipy_io.loadmat, fpath)
-            return mat["IR_L"][:, idx], mat["IR_R"][:, idx]
+            return np.array([mat["IR_L"][:, idx], mat["IR_R"][:, idx]])
 
 
 class AIRDataset(FileIRDataset[str]):
@@ -184,11 +184,11 @@ class KEMARDataset(FileIRDataset[Tuple[pathlib.Path, str]]):
     license = "CC BY-NC 4.0"
 
     file_patterns = ["**/*.mat"]
+    surround_types = ["L", "LS", "R", "RS", "C", "S"]
 
     def _list_irs(self):
         files = self.list_files()
-        surround_types = ["L", "LS", "R", "RS", "C", "S"]
-        return [((f, t), 2, 96000, 48000) for f in files for t in surround_types]
+        return [((f, t), 2, 96000, 48000) for f in files for t in self.surround_types]
 
     def _get_ir(self, name):
         fpath, surround_type = name
@@ -203,8 +203,9 @@ class KEMARDataset(FileIRDataset[Tuple[pathlib.Path, str]]):
             irs = scipy_io.loadmat(f, struct_as_record=False)["brirData"][0][
                 0
             ].impulseResponse
-            for t, ir in irs:
-                yield (f, t[0]), ir.T
+            irs = {t[0]: ir for t, ir in irs}
+            for t in self.surround_types:
+                yield (f, t), 48000, irs[t].T
 
 
 class MIRDDataset(FileIRDataset[Tuple[pathlib.Path, int]]):
@@ -228,7 +229,7 @@ class MIRDDataset(FileIRDataset[Tuple[pathlib.Path, int]]):
         for f in self.list_files():
             irs = scipy_io.loadmat(f, struct_as_record=False)["impulse_response"]
             for idx, ir in enumerate(irs.T):
-                yield (f, idx), ir.reshape((1, -1))
+                yield (f, idx), 48000, ir.reshape((1, -1))
 
 
 class Reverb2014Dataset(WavDataset):
@@ -247,7 +248,12 @@ class TUIInEarBehindEarDataset(FileIRDataset[Tuple[pathlib.Path, str, int]]):
     url = "https://github.com/pyBinSim/HeadRelatedDatabase"
     license = "CC BY-NC 4.0"
 
-    file_patterns = ["lab_brirs.mat", "reha_brirs.mat", "tvstudio_brirs.mat"]
+    def _list_files(self):
+        return [
+            self.root.joinpath("lab_brirs.mat"),
+            self.root.joinpath("reha_brirs.mat"),
+            self.root.joinpath("tvstudio_brirs.mat"),
+        ]
 
     def _list_irs(self):
         lab, reha, tvstudio = self.list_files()
@@ -262,7 +268,7 @@ class TUIInEarBehindEarDataset(FileIRDataset[Tuple[pathlib.Path, str, int]]):
         fpath, t, i = name
         mat = scipy_io.loadmat(fpath, struct_as_record=False)
         mat = getattr(mat[list(mat.keys())[-1]][0][0], t)[0][0]
-        return mat.left[i], mat.right[i]
+        return np.array([mat.left[i], mat.right[i]])
 
     def _getall(self):
         for f in self.list_files():
@@ -271,7 +277,7 @@ class TUIInEarBehindEarDataset(FileIRDataset[Tuple[pathlib.Path, str, int]]):
             for t in ["inear", "btear"]:
                 data = getattr(mat, t)[0][0]
                 for idx, (l, r) in enumerate(zip(data.left, data.right)):
-                    yield (f, t, idx), (l, r)
+                    yield (f, t, idx), 44100, np.array([l, r])
 
 
 class BellVarechoicDataset(FileIRDataset[Tuple[pathlib.Path, int]]):

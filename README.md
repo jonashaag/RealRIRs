@@ -30,6 +30,11 @@ aachen_impulse_response_database[aachen_impulse_response_database.list_irs()[0][
 # Get all IRs, much faster than using [] (__getitem__) multiple times
 aachen_impulse_response_database.getall()
 # => <generator object FileIRDataset.getall at 0x11af88e40>
+
+# Generator contains (name, sample_rate, ir) tuples.
+next(aachen_impulse_response_database.getall())
+# => (PosixPath('/path/to/AIR_1_4/air_binaural_aula_carolina_0_1_1_90_3.mat'), 48000,
+#     array([[-2.73920884e-06, -3.49019781e-06, -1.70998298e-06, ..., -7.13979890e-11]]))
 ```
 
 ## Supported datasets
