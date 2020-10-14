@@ -453,3 +453,15 @@ class MITDataset(WavDataset):
     name = "Statistics of natural reverberation enable perceptual separation of sound and space"
     url = "https://mcdermottlab.mit.edu/Reverb/IR_Survey.html"
     license = "?"
+
+
+class EchoThiefDataset(WavDataset):
+    name = "EchoThief Impulse Response Library"
+    url = "http://www.echothief.com/downloads/"
+    license = "?"
+
+
+class SMARDDataset(WavDataset):
+    name = "Single- and Multichannel Audio Recordings Database (SMARD)"
+    url = "https://www.smard.es.aau.dk/"
+    license = "?"

@@ -50,6 +50,7 @@ next(aachen_impulse_response_database.getall())
 | [Database of Omnidirectional and B-Format Impulse Responses](http://isophonics.net/content/room-impulse-response-data-set) | ? | 2041 | 68.0 s | 68.0 s |
 | [Dataset of In-The-Ear and Behind-The-Ear Binaural Room Impulse Responses](https://github.com/pyBinSim/HeadRelatedDatabase) | CC BY-NC 4.0 | 192 | 2.1 s | 4.3 s |
 | [Dataset of measured binaural room impulse responses for use in an position-dynamic auditory augmented reality application](https://zenodo.org/record/1321996) | CC BY-NC 4.0 | 3888 | 129.6 s | 259.2 s |
+| [EchoThief Impulse Response Library](http://www.echothief.com/downloads/) | ? | 115 | 2.5 s | 4.9 s |
 | [Greg Hopkins IR 1 – Digital, Analog, Real Spaces](https://www.dropbox.com/sh/vjf5bsi28hcrkli/AAAmln01N4awOuclCi5q0DOia/Greg%20Hopkins%20IR%201%20-%20Digital%2C%20Analog%2C%20Real%20Spaces) | ? | 22 | 1.1 s | 2.2 s |
 | [Impulse Response Database for HybridReverb2](https://github.com/jpcima/HybridReverb2-impulse-response-database) | CC BY-SA 4.0 | 472 | 16.5 s | 16.5 s |
 | [Impulse Responses from the Bell Labs Varechoic Chamber](?) | ? | 12 | 0.2 s | 0.2 s |
@@ -61,6 +62,7 @@ next(aachen_impulse_response_database.getall())
 | [REVERB challenge RealData](http://reverb2014.dereverberation.com/) | ? | 36 | 0.6 s | 4.8 s |
 | [RIR samples Darmstadt and Helsinki, Summer-Autumn 2018](https://zenodo.org/record/1434786) | CC BY 4.0 | 1788 | 25.3 s | 25.3 s |
 | [RWCP Sound Scene Database in Real Acoustical Environments](https://www.openslr.org/13/) | ? | 6758 | 64.6 s | 64.6 s |
+| [Single- and Multichannel Audio Recordings Database (SMARD)](https://www.smard.es.aau.dk/) | ? | 1008 | 198.3 s | 198.3 s |
 | [Statistics of natural reverberation enable perceptual separation of sound and space](https://mcdermottlab.mit.edu/Reverb/IR_Survey.html) | ? | 270 | 2.9 s | 2.9 s |
 | [Surrey Binaural Room Impulse Response Measurements](https://github.com/IoSR-Surrey/RealRoomBRIRs) | MIT | 370 | 4.2 s | 4.2 s |
 | [The IoSR listening room multichannel BRIR dataset](https://github.com/IoSR-Surrey/IoSR_ListeningRoom_BRIRs) | CC BY 4.0 | 3456 | 78.6 s | 157.3 s |
