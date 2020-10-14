@@ -2,6 +2,8 @@ import os
 import pathlib
 import textwrap
 
+import numpy as np
+
 import realrirs.datasets
 
 R = pathlib.Path(os.environ["REALRIRS_ROOT"])
@@ -37,25 +39,28 @@ datasets = [
     realrirs.datasets.IOSRListeningRoomsDataset(R.joinpath("IoSR_ListeningRoom_BRIRs")),
     realrirs.datasets.FOAIRDataset(R.joinpath("360-BRIR-FOAIR-database")),
     realrirs.datasets.MITDataset(R.joinpath("MIT")),
+    realrirs.datasets.EchoThiefDataset(R.joinpath("EchoThiefImpulseResponseLibrary")),
+    realrirs.datasets.SMARDDataset(R.joinpath("SMARD")),
 ]
 
-meta = {}
 
-for ds in datasets:
-    irs_list = ds.list_irs()
-    meta[ds.name] = {
-        "n_irs": len(irs_list),
-        "total_duration": sum(
-            n_samples / sr for _, n_channels, n_samples, sr in irs_list
-        ),
+def process_ds(ds):
+    print("Processing", ds)
+    trimmed_ir_shapes = [
+        (ir.shape[0], len(np.trim_zeros(ir[0])) / sr) for _, sr, ir in ds.getall()
+    ]
+    return ds.name, {
+        "n_irs": len(trimmed_ir_shapes),
+        "total_duration": sum(1 * trimmed_len for _, trimmed_len in trimmed_ir_shapes),
         "total_duration_channels": sum(
-            n_samples / sr * n_channels for _, n_channels, n_samples, sr in irs_list
+            n_channels * trimmed_len for n_channels, trimmed_len in trimmed_ir_shapes
         ),
         "license": ds.license,
         "url": ds.url,
     }
 
-for ds_name, ds_meta in sorted(meta.items()):
+
+for ds_name, ds_meta in sorted(map(process_ds, datasets)):
     print(
         " | ".join(
             [
