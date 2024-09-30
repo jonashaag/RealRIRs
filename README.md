@@ -52,6 +52,7 @@ next(aachen_impulse_response_database.getall())
 | [Dataset of measured binaural room impulse responses for use in an position-dynamic auditory augmented reality application](https://zenodo.org/record/1321996) | CC BY-NC 4.0 | 3888 | 129.6 s | 259.2 s |
 | [EchoThief Impulse Response Library](http://www.echothief.com/downloads/) | ? | 115 | 2.5 s | 4.9 s |
 | [Greg Hopkins IR 1 – Digital, Analog, Real Spaces](https://www.dropbox.com/sh/vjf5bsi28hcrkli/AAAmln01N4awOuclCi5q0DOia/Greg%20Hopkins%20IR%201%20-%20Digital%2C%20Analog%2C%20Real%20Spaces) | ? | 22 | 1.1 s | 2.2 s |
+| [GTU-RIR Gebze Technical University Room Impulse Reponse Dataset](https://github.com/mehmetpekmezci/gtu-rir) | GPL | 15000 | 500 s | 500 s |
 | [Impulse Response Database for HybridReverb2](https://github.com/jpcima/HybridReverb2-impulse-response-database) | CC BY-SA 4.0 | 472 | 16.5 s | 16.5 s |
 | [Impulse Responses from the Bell Labs Varechoic Chamber](?) | ? | 12 | 0.2 s | 0.2 s |
 | [METU SPARG Eigenmike em32 Acoustic Impulse Response Dataset v0.1.0](https://zenodo.org/record/2635758) | CC BY 4.0 | 8052 | 268.4 s | 268.4 s |
